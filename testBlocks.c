@@ -1,4 +1,4 @@
-// Include the standard library
+
 #include <stdio.h>
 
 // create an array of integers of length 2
@@ -6,17 +6,17 @@ int fileStartEndIndex[2];
 
 int getNumber() {
   int userInput;
-  printf("Enter the how many chunks you want to split the file into: ");
+  printf("Enter the how many blocks you want to split the file into: ");
   scanf("%d", &userInput);
   return userInput;
 }
 
-int * getChunk(int fileLength, int numChunks, int chunkIndex) {
-  int chunkSize = fileLength / numChunks;
-  int remainder = fileLength % numChunks;
-  int start = chunkIndex * chunkSize;
-  int end = start + chunkSize - 1;
-  if (chunkIndex == numChunks - 1) {
+int * getBlock(int fileLength, int numBlocks, int blockIndex) {
+  int blockSize = fileLength / numBlocks;
+  int remainder = fileLength % numBlocks;
+  int start = blockIndex * blockSize;
+  int end = start + blockSize - 1;
+  if (blockIndex == numBlocks - 1) {
     end += remainder;
   }
   fileStartEndIndex[0] = start;
@@ -26,9 +26,9 @@ int * getChunk(int fileLength, int numChunks, int chunkIndex) {
 
 
 // To Run:
-// gcc dummy.c -o dummy && ./dummy
+// gcc testBlocks.c -o testBlocks && ./testBlocks
 int main(void) {
-  int fileChunks = getNumber();
+  int fileBlocks = getNumber();
 
   FILE *fpInit;
   fpInit = fopen("numbers/file1.dat", "r");
@@ -42,11 +42,11 @@ int main(void) {
 
   int sum = 0;
 
-  // For the numbers 1 to fileChunks
-  for (int i = 0; i < fileChunks; i++) {
-    int chunkIndex = i;
-    int startIndex = getChunk(fileLength, fileChunks, chunkIndex)[0];
-    int endIndex = getChunk(fileLength, fileChunks, chunkIndex)[1];
+  // For the numbers 1 to fileChunkns
+  for (int i = 0; i < fileBlocks; i++) {
+    int blockIndex = i;
+    int startIndex = getBlock(fileLength, fileBlocks, blockIndex)[0];
+    int endIndex = getBlock(fileLength, fileBlocks, blockIndex)[1];
     // printf("Start index: %d, End index: %d\n", startIndex, endIndex);
 
     // Open the file1.dat for the start and end index
@@ -64,7 +64,7 @@ int main(void) {
     }
 
     // Print the sum
-    printf("Sum of chunk(%d): %d\n", i, sum);
+    printf("Sum of block(%d): %d\n", i, sum);
   }
 
   // Print the sum

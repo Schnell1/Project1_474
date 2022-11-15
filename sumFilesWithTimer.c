@@ -1,9 +1,5 @@
-// Create a hello world in C
-
 #include <stdio.h>
-// Import clock module from time library
 #include <time.h>
-// Import the sleep module from the time library
 #include <unistd.h>
 
 // Create a function that sums up all the numbers in a file

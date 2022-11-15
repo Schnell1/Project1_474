@@ -1,4 +1,4 @@
-# c-fork-testing
+# Project1_474
 
 - Summing up numbers by allowing the user to input how many child processes they would like to create.
 - This will create a fork that uses a pipe to communicate back to the parent the total sum that it gets.
@@ -6,7 +6,6 @@
 - It will iterate over the file until it gets to the `endIndex` for that child process.
 - This allows us to concurrently read the file.
 
-- This program was built to allow the user to specify any number of child processes. It will be fun to see what the optimal number of processes for a given hardware is once the number set is much larger.
-
-# File Structure
-- At the time of this writing, `forkAndSum.c` is a full demo of summing the numbers in parallel. All the other files were learnings to get there.
+- This program was built to allow the user to specify any number of child processes.
+- Please run the main program
+- The other programs were all learning feats

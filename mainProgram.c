@@ -1,27 +1,39 @@
 #include <stdio.h>
-// Import the fork function from the unistd.h header file.
 #include <unistd.h>
-// Import the wait function from the unistd.h header file.
 #include <sys/wait.h>
-// Import the clock_t module
 #include <time.h>
 
 // To Run:
-// gcc forkAndSum.c -o forkAndSum && ./forkAndSum
-
-// This program creates 4 forks and sums the numbers 1-1000.
-// The parent process will wait for all the children to finish before printing the sum.
+// gcc mainProgram.c -o mainProgram && ./mainProgram
 
 
-// Create an array of 4 pipes
 int pipefd[4][2];
 int fileStartEndIndex[2]; // Only way to return 2 values from a function
 
 int getNumber() {
   int userInput;
-  printf("Enter the number of pipes you want to create: ");
+  printf("Enter the number of child processes you want to create: ");
   scanf("%d", &userInput);
   return userInput;
+}
+char* getFile() {
+  int userInput;
+  char* outPut = "";
+  printf("\n Which file do you want to prcoess? \n Option: 1 = file1(contains 1000 lines), 2 = file2(contains 10,000 lines) , 3 = file3(contain 100,000 lines): ");
+  scanf("%d", &userInput);
+  if(userInput == 1)
+  {
+    outPut = "numbers/file1.dat";
+  }
+  if(userInput == 2)
+  {
+    outPut = "numbers/file2.dat";
+  }
+   if(userInput == 3)
+  {
+    outPut = "numbers/file3.dat";
+  }
+  return outPut;
 }
 
 // Function that returns the length of the file, seperated by newlines. Given a file name.
@@ -38,12 +50,12 @@ int myFileLength(char *fileName) {
   return fileLength;
 }
 
-int * getChunk(int fileLength, int numChunks, int chunkIndex) {
-  int chunkSize = fileLength / numChunks;
-  int remainder = fileLength % numChunks;
-  int start = chunkIndex * chunkSize;
-  int end = start + chunkSize - 1;
-  if (chunkIndex == numChunks - 1) {
+int * getBlock(int fileLength, int numBlocks, int blockIndex) {
+  int blockSize = fileLength / numBlocks;
+  int remainder = fileLength % numBlocks;
+  int start = blockIndex * blockSize;
+  int end = start + blockSize - 1;
+  if (blockIndex == numBlocks - 1) {
     end += remainder;
   }
   fileStartEndIndex[0] = start;
@@ -52,9 +64,10 @@ int * getChunk(int fileLength, int numChunks, int chunkIndex) {
 }
 
 int main() {
+  
   int numPipes = getNumber();
-
-  int fileLength = myFileLength("numbers/file1.dat");
+  char * filePath = getFile();
+  int fileLength = myFileLength(filePath);
 
   // Create the pipe.
   for (int i = 0; i < 4; i++) {
@@ -65,7 +78,7 @@ int main() {
   int pid;
 
   for (i = 0; i < numPipes; i++) {
-    int chunkIndex = i;
+    int blockIndex = i;
 
     pid = fork();
     if (pid == 0) {
@@ -74,17 +87,17 @@ int main() {
 
       // Child process
       int childSum = 0;
-      int chunkIndex = i;
-      int startIndex = getChunk(fileLength, numPipes, chunkIndex)[0];
-      int endIndex = getChunk(fileLength, numPipes, chunkIndex)[1];
+      int blockIndex = i;
+      int startIndex = getBlock(fileLength, numPipes, blockIndex)[0];
+      int endIndex = getBlock(fileLength, numPipes, blockIndex)[1];
       // printf("Start index: %d, End index: %d\n", startIndex, endIndex);
 
-      // Open the file1.dat for the start and end index
+      // Open the file for the start and end index
       // Sum up all the numbers
       // Close the file
       FILE *fp;
       int num;
-      fp = fopen("numbers/file1.dat", "r");
+      fp = fopen(filePath, "r");
       // fseek(fp, startIndex * sizeof(int), SEEK_SET);
       fseek(fp, (sizeof(int) + 1) * startIndex, SEEK_SET);
       // for the range of start and end index
@@ -98,9 +111,9 @@ int main() {
       // get end time of child
       clock_t end = clock();
 
-      // get the total time of the child
+      // get the total time of the child 
       double time_taken = ((double)(end - start));
-      printf("Time taken by process(%d): %f\n", i, time_taken);
+      printf("Time taken by process: (%d): %f\n\n", i, time_taken);
 
       write(pipefd[i][1], &childSum, sizeof(childSum));
       return 0;
@@ -123,7 +136,8 @@ int main() {
     totalSum += sumFromPipe;
   }
 
-  printf("Sum: %d\n", totalSum);
+  printf("Final Time = The longest child time process \n");
+  printf("Sum of numbers: %d\n", totalSum);
   return 0;
 }
 
